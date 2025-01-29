@@ -1,0 +1,24 @@
+body {
+    background-image: url('https://img.freepik.com/free-photo/plate-food-with-different-dishes-including-chickpeas-spinach-spinach_188544-25932.jpg?t=st=1738154187~exp=1738157787~hmac=a5e29a02717c3655aa9e8e9dc6a7d791285d66376321e5bf0f95f44054bf31f0&w=1060');
+    background-size: cover;
+    background-position: center;
+    color:aliceblue;
+    opacity: 0.9;
+}
+
+.input-box {
+    width: 100%;
+    padding: 8px;
+    color: antiquewhite;
+    border: 1px solid #000;
+    background-color: #353535;
+    border-radius: 6px;
+    outline: none;
+    transition: border 0.3s;
+}
+
+.input-box:focus {
+    border-color: #007BFF;
+    box-shadow: 0px 0px 6px rgba(0, 123, 255, 0.5);
+    
+}
