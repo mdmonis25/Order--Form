@@ -1,90 +1,96 @@
-const foodOptions = ["Pizza", "Burger", "Pasta", "Sandwich", "Salad", "Fries", "Juice", "Coffee"];
-const foodList = document.getElementById("foodList");
-const selectedItemsDiv = document.getElementById("selectedItems");
-const selectedFoodList = document.getElementById("selectedFoodList");
+document.addEventListener("DOMContentLoaded", () => {
+    const foodList = [
+        { name: "Pizza", price: 300 },
+        { name: "Burger", price: 150 },
+        { name: "Pasta", price: 200 },
+        { name: "Fries", price: 100 },
+        { name: "Sandwich", price: 180 }
+    ];
 
-// Generate food item checkboxes dynamically
-foodOptions.forEach(food => {
-    const div = document.createElement("div");
-    div.classList.add("flex", "items-center", "gap-2");
-
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.value = food;
-    checkbox.classList.add("food-checkbox");
-
-    const label = document.createElement("label");
-    label.textContent = food;
-
-    div.appendChild(checkbox);
-    div.appendChild(label);
-    foodList.appendChild(div);
-});
-
-// Listen for checkbox selection
-document.querySelectorAll(".food-checkbox").forEach(checkbox => {
-    checkbox.addEventListener("change", function () {
-        updateSelectedItems();
+    const foodSelect = document.getElementById("food-select");
+    foodList.forEach((food, index) => {
+        let option = document.createElement("option");
+        option.value = index;
+        option.textContent = `${food.name} - ₹${food.price}`;
+        foodSelect.appendChild(option);
     });
+
+    foodSelect.addEventListener("change", updatePrice);
+    document.getElementById("quantity").addEventListener("input", updatePrice);
 });
 
-function updateSelectedItems() {
-    const checkedBoxes = document.querySelectorAll(".food-checkbox:checked");
-    selectedFoodList.innerHTML = ""; // Clear previous selection
+let orders = [];
 
-    if (checkedBoxes.length > 0) {
-        selectedItemsDiv.classList.remove("hidden");
-
-        checkedBoxes.forEach(box => {
-            const food = box.value;
-            const div = document.createElement("div");
-            div.classList.add("flex", "items-center", "gap-2", "mt-2");
-
-            const quantityInput = document.createElement("input");
-            quantityInput.type = "number";
-            quantityInput.value = 1;
-            quantityInput.min = 1;
-            quantityInput.classList.add("input-box", "w-16");
-
-            const label = document.createElement("span");
-            label.textContent = food;
-
-            div.appendChild(label);
-            div.appendChild(quantityInput);
-            selectedFoodList.appendChild(div);
-        });
-    } else {
-        selectedItemsDiv.classList.add("hidden");
+function updatePrice() {
+    const foodIndex = document.getElementById("food-select").value;
+    const quantity = parseInt(document.getElementById("quantity").value);
+    if (foodIndex !== "" && quantity > 0) {
+        const selectedFood = [
+            { name: "Pizza", price: 300 },
+            { name: "Burger", price: 150 },
+            { name: "Pasta", price: 200 },
+            { name: "Fries", price: 100 },
+            { name: "Sandwich", price: 180 }
+        ][foodIndex];
+        document.getElementById("price").value = selectedFood.price * quantity;
     }
 }
 
-function placeOrder() {
-    const roomNumber = document.getElementById("roomNumber").value.trim();
-    const guestName = document.getElementById("guestName").value.trim();
-    const checkedBoxes = document.querySelectorAll(".food-checkbox:checked");
-
-    if (!roomNumber || !guestName) {
-        alert("Please enter your Room Number and Name.");
+function addItem() {
+    const foodIndex = document.getElementById("food-select").value;
+    const quantity = parseInt(document.getElementById("quantity").value);
+    
+    if (foodIndex === "" || quantity <= 0) {
+        alert("Please select a food item and enter a valid quantity.");
         return;
     }
 
-    if (checkedBoxes.length === 0) {
-        alert("Please select at least one food item.");
-        return;
-    }
+    const selectedFood = [
+        { name: "Pizza", price: 300 },
+        { name: "Burger", price: 150 },
+        { name: "Pasta", price: 200 },
+        { name: "Fries", price: 100 },
+        { name: "Sandwich", price: 180 }
+    ][foodIndex];
 
-    let orderDetails = {
-        roomNumber,
-        guestName,
-        foodItems: []
-    };
+    orders.push({ name: selectedFood.name, quantity, price: selectedFood.price * quantity });
+    renderOrders();
+}
 
-    checkedBoxes.forEach(box => {
-        const food = box.value;
-        const quantity = document.querySelector(`.input-box[value="${food}"]`)?.value || 1;
-        orderDetails.foodItems.push({ food, quantity });
+function renderOrders() {
+    const table = document.getElementById("order-table");
+    table.innerHTML = "";
+    let total = 0;
+
+    orders.forEach((order, index) => {
+        total += order.price;
+        table.innerHTML += `
+            <tr class="text-center bg-gray-700">
+                <td class="border border-gray-600 p-2">${index + 1}</td>
+                <td class="border border-gray-600 p-2">${order.name}</td>
+                <td class="border border-gray-600 p-2">${order.quantity}</td>
+                <td class="border border-gray-600 p-2">₹${order.price}</td>
+                <td class="border border-gray-600 p-2">
+                    <button onclick="deleteItem(${index})" class="bg-white-500 hover:bg-white-600 text-white px-2 py-1 rounded">🗑️</button>
+                </td>
+            </tr>
+        `;
     });
 
-    console.log("Order Placed:", orderDetails);
-    alert(`Order placed successfully for Room ${roomNumber}!`);
+    document.getElementById("total-price").textContent = total;
+}
+
+function deleteItem(index) {
+    orders.splice(index, 1);
+    renderOrders();
+}
+
+function clearItems() {
+    orders = [];
+    renderOrders();
+}
+
+function placeOrder() {
+    alert("Order placed successfully!");
+    clearItems();
 }
